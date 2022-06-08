@@ -6,6 +6,13 @@
     <h3>Face API Detect</h3>
 
     @if(!isLoaded){
+        <div>
+            Detection Model:
+            <select @onchange="selectedModel">
+                <option value="1" default>Model_01</option>
+                <option value="3" default>Model_03</option>
+            </select>
+        </div>
         <InputFile OnChange="@loadFile"/>
     }
 
@@ -47,11 +54,18 @@
     [Parameter] 
     public EventCallback OnAfterApiCalled { get; set; }
 
+    //Default Detection Model 1
+    private string modelVersion = "1";
+
     protected override void OnInitialized()
     {
         if(FaceResultModel.FaceAnalysisResult.Count > 0){
             isLoaded = true;
         }
+    }
+
+    private void selectedModel(ChangeEventArgs selectEvent){
+        modelVersion = selectEvent?.Value?.ToString()!;
     }
     
     private async Task loadFile(InputFileChangeEventArgs e){
@@ -76,14 +90,14 @@
         }
 
         try{
-            IList<DetectedFace> detectedFaces = await FaceService.DetectFaceExtract(FaceClient,resizedImage.OpenReadStream());
+            IList<DetectedFace> detectedFaces = await FaceService.DetectFaceExtract(FaceClient,resizedImage.OpenReadStream(),modelVersion);
 
             if(detectedFaces.Count == 0){
                 FaceResultModel.FaceAnalysisResult = new List<string>(){"Face not found"};
             }else if(detectedFaces.Count > 1){
                 FaceResultModel.FaceAnalysisResult = new List<string>(){"Multiple face are found, please input single face image"};
             }else {
-                FaceResultModel.FaceAnalysisResult = FaceService.GetFaceAnalysisResult(detectedFaces[0]);
+                FaceResultModel.FaceAnalysisResult = FaceService.GetFaceAnalysisResult(detectedFaces[0],modelVersion);
                 FaceResultModel.ImageDataUrl = FaceService.GetFaceApiResultImageUrl(detectedFaces[0],buffers);
             }
         }
