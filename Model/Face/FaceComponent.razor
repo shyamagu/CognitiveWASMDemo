@@ -1,0 +1,97 @@
+@using Microsoft.Azure.CognitiveServices.Vision.Face
+@using Microsoft.Azure.CognitiveServices.Vision.Face.Models
+@inject FaceService FaceService
+
+<div class="api-test">
+    <h3>Face API Detect</h3>
+
+    @if(!isLoaded){
+        <InputFile OnChange="@loadFile"/>
+    }
+
+    <div class="face_field">
+        <div class="face_img_field">
+            <img src="@FaceResultModel.ImageDataUrl"/>
+        </div>
+        @if(isLoading){
+            <div class="loader">Loading...</div>
+        }else{
+            <div class="face_text_field">
+                <ul>
+                @foreach (var result in FaceResultModel.FaceAnalysisResult)
+                {
+                    <li>@result</li>
+                }
+                </ul>
+            </div>
+        }
+    </div>
+
+</div>
+
+@code{
+
+    private Boolean isLoading = false;
+
+    private Boolean isLoaded = false;
+
+    private List<string> faceApiResult = new();
+
+    [Parameter]
+    [EditorRequired]
+    public IFaceClient? FaceClient {get;set;}
+
+    [Parameter]
+    public FaceResultModel FaceResultModel {get;set;} = new();
+
+    [Parameter] 
+    public EventCallback OnAfterApiCalled { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if(FaceResultModel.FaceAnalysisResult.Count > 0){
+            isLoaded = true;
+        }
+    }
+    
+    private async Task loadFile(InputFileChangeEventArgs e){
+
+        isLoading = true;
+
+        IBrowserFile imgFile = e.File;
+
+        string imageType = imgFile.ContentType;
+        var resizedImage = await imgFile.RequestImageFileAsync(imageType, 300, 400);
+        var buffers = new byte[resizedImage.Size];
+
+        var stream = await resizedImage.OpenReadStream().ReadAsync(buffers);
+        FaceResultModel.ImageDataUrl = $"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
+
+        //一旦表示したい場合
+        StateHasChanged();
+
+        if(FaceClient is null){
+            FaceResultModel.FaceAnalysisResult = new List<string>(){"Please check your key and endpoint"};
+            return;
+        }
+
+        IList<DetectedFace> detectedFaces = await FaceService.DetectFaceExtract(FaceClient,resizedImage.OpenReadStream());
+
+        if(detectedFaces.Count == 0){
+            FaceResultModel.FaceAnalysisResult = new List<string>(){"Face not found"};
+        }else if(detectedFaces.Count > 1){
+            FaceResultModel.FaceAnalysisResult = new List<string>(){"Multiple face are found, please input single face image"};
+        }else {
+            FaceResultModel.FaceAnalysisResult = FaceService.GetFaceAnalysisResult(detectedFaces[0]);
+            FaceResultModel.ImageDataUrl = FaceService.GetFaceApiResultImageUrl(detectedFaces[0],buffers);
+        }
+        
+        FaceService.FaceResult.Add(FaceResultModel);
+
+        isLoading = false;
+        isLoaded = true;
+
+        await OnAfterApiCalled.InvokeAsync();
+    }
+}
+

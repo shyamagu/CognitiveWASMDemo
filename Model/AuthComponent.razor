@@ -1,0 +1,58 @@
+<p>
+Setup your key and endpoint and try Face API.
+</p>
+<EditForm Model="@authModel" OnSubmit="validateData">
+    <label>
+        <h5>Key</h5>
+        <InputText id="key" type="password" @bind-Value=authModel!.Key />
+    </label>
+    <label>
+        <h5>Endpoint</h5>
+        <InputText id="endpoint" type="password" @bind-Value=authModel.Endpoint />
+    </label>
+    <input type="submit" class="btn btn-primary" value="Setup"/>
+    <div>@message</div>
+</EditForm>
+
+@code{
+    [Parameter]
+    public string? Key {get; set;}
+
+    [Parameter]
+    public string? Endpoint {get; set;}
+
+    private AuthModel? authModel = new();
+
+    private string? message;
+
+    [Parameter] 
+    public EventCallback<AuthModel> SetAuth { get; set; }
+    private async Task validateData(EditContext editContext){
+        message = String.Empty;
+        var auth = editContext.Model as AuthModel;
+
+        if(auth is null){
+            message = "something wrong";
+            return;
+        }
+
+        if(String.IsNullOrEmpty(auth.Key) || String.IsNullOrEmpty(auth.Endpoint)){
+            message = "input key and endpoint";
+            return;
+        }
+
+        await SetAuth.InvokeAsync(auth);
+
+        message = "Your key and endpoint are setupped";
+    }
+
+    protected override void OnInitialized()
+    {
+        if(!String.IsNullOrEmpty(Key)&&!String.IsNullOrEmpty(Endpoint)){
+            authModel = new AuthModel(Key,Endpoint);
+            message = "Your key and endpoint are setupped";
+        }
+    }
+}
+
+

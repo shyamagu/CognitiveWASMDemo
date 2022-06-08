@@ -1,0 +1,80 @@
+@page "/face"
+@using Microsoft.Extensions.Configuration
+@using BlazorCognitiveWASM.Model
+@using BlazorCognitiveWASM.Model.Face
+@inject IJSRuntime JS
+@inject IConfiguration configuration
+@inject AuthManager AuthManager
+@inject FaceService FaceService
+
+
+<h1>Face API</h1>
+
+<AuthComponent 
+    Key="@AuthManager.FaceApi_Key" 
+    Endpoint="@AuthManager.FaceApi_Endpoint" 
+    SetAuth="AuthManager.SetFaceApiAuthentication"
+/>
+
+@*
+下の記述にしないとエラーがとれなかった時もあった
+SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))" 
+*@
+
+@if(AuthManager.IsFaceApiAuthAlreadySet){
+    @for(int index=0;index<componentNumber;index++){
+        <FaceComponent
+            @key=index
+            FaceClient="@FaceService.GetFaceClient(AuthManager.FaceApi_Key,AuthManager.FaceApi_Endpoint)"
+            FaceResultModel="getExistFaceResult(index)"
+            OnAfterApiCalled="IncrementComponentNumber" />
+    }
+
+    /* これだとなぜか isLoadedがtrueになって、ファイル選択ボタンが表示されない
+    @foreach (var faceResultModel in FaceService.FaceResult)
+    {
+        <FaceComponent
+            FaceClient="@FaceService.getFaceClient(AuthManager.FaceApi_Key,AuthManager.FaceApi_Endpoint)"
+            FaceResultModel="faceResultModel"
+            OnAfterApiCalled="IncrementComponentNumber" />
+    }
+    <FaceComponent
+        FaceClient="@FaceService.getFaceClient(AuthManager.FaceApi_Key,AuthManager.FaceApi_Endpoint)"
+        FaceResultModel="new FaceResultModel()"
+        OnAfterApiCalled="IncrementComponentNumber"
+    />
+    */
+}
+
+<div class="space_bottom"></div>
+
+@code {
+
+    private int componentNumber = 1;
+
+    protected override void OnInitialized()
+    {
+        //Development key and endpoint
+        var key = configuration.GetSection("Face")["Key"];
+        var endpoint = configuration.GetSection("Face")["Endpoint"];
+        if(!String.IsNullOrEmpty(key) && !String.IsNullOrEmpty(endpoint)){
+            AuthManager.SetFaceApiAuthentication(new AuthModel(key,endpoint));
+        }
+
+        //Set Component Number
+        componentNumber = FaceService.FaceResult.Count + 1;
+    }
+
+    private FaceResultModel getExistFaceResult(int index){
+        if(index < FaceService.FaceResult.Count){
+            return FaceService.FaceResult[index];
+        }else{
+            return new FaceResultModel();
+        }
+    }
+
+    public async Task IncrementComponentNumber(){
+        componentNumber++;
+        await JS.InvokeVoidAsync("scrollBy",0,400);
+    }
+}

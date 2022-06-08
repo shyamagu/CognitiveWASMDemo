@@ -1,0 +1,26 @@
+.api-test {
+    background-color: #ede4ff;
+    border-bottom: 2px solid #8949ab;
+    margin: 30px 50px 5px 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+.leftpadding10{
+    margin-top:20px;
+    margin-left: 10px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
+
+.face_field{
+    display: flex;
+}
+
+.face_img_field{
+    width:350px;
+}
+
+.face_text_field{
+    text-align: left;
+}
