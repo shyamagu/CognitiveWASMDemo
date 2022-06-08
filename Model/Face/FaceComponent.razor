@@ -75,17 +75,23 @@
             return;
         }
 
-        IList<DetectedFace> detectedFaces = await FaceService.DetectFaceExtract(FaceClient,resizedImage.OpenReadStream());
+        try{
+            IList<DetectedFace> detectedFaces = await FaceService.DetectFaceExtract(FaceClient,resizedImage.OpenReadStream());
 
-        if(detectedFaces.Count == 0){
-            FaceResultModel.FaceAnalysisResult = new List<string>(){"Face not found"};
-        }else if(detectedFaces.Count > 1){
-            FaceResultModel.FaceAnalysisResult = new List<string>(){"Multiple face are found, please input single face image"};
-        }else {
-            FaceResultModel.FaceAnalysisResult = FaceService.GetFaceAnalysisResult(detectedFaces[0]);
-            FaceResultModel.ImageDataUrl = FaceService.GetFaceApiResultImageUrl(detectedFaces[0],buffers);
+            if(detectedFaces.Count == 0){
+                FaceResultModel.FaceAnalysisResult = new List<string>(){"Face not found"};
+            }else if(detectedFaces.Count > 1){
+                FaceResultModel.FaceAnalysisResult = new List<string>(){"Multiple face are found, please input single face image"};
+            }else {
+                FaceResultModel.FaceAnalysisResult = FaceService.GetFaceAnalysisResult(detectedFaces[0]);
+                FaceResultModel.ImageDataUrl = FaceService.GetFaceApiResultImageUrl(detectedFaces[0],buffers);
+            }
         }
-        
+        catch (System.Exception)
+        {
+            FaceResultModel.FaceAnalysisResult = new List<string>(){"Face API Call Exception, Please check your key and endpoint"};
+        }
+            
         FaceService.FaceResult.Add(FaceResultModel);
 
         isLoading = false;

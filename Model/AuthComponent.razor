@@ -2,11 +2,11 @@
 Setup your key and endpoint and try Face API.
 </p>
 <EditForm Model="@authModel" OnSubmit="validateData">
-    <label>
+    <label class="padding_right">
         <h5>Key</h5>
         <InputText id="key" type="password" @bind-Value=authModel!.Key />
     </label>
-    <label>
+    <label class="padding_right">
         <h5>Endpoint</h5>
         <InputText id="endpoint" type="password" @bind-Value=authModel.Endpoint />
     </label>
