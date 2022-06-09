@@ -26,8 +26,10 @@ SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))"
         <FaceComponent
             @key=index
             FaceClient="@FaceService.GetFaceClient(AuthManager.FaceApi_Key,AuthManager.FaceApi_Endpoint)"
-            FaceResultModel="getExistFaceResult(index)"
-            OnAfterApiCalled="IncrementComponentNumber" />
+            FaceResultModel="@getExistFaceResult(index)"
+            OnAfterApiCalled="@IncrementComponentNumber"
+            Label="@getLabel(index+1,componentNumber)"    
+            />
     }
 
     /* これだとなぜか isLoadedがtrueになって、ファイル選択ボタンが表示されない
@@ -77,4 +79,9 @@ SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))"
         componentNumber++;
         await JS.InvokeVoidAsync("scrollBy",0,400);
     }
+
+    private string getLabel(int num1, int num2){
+        return string.Format("({0}/{1})",num1,num2);
+    }
+
 }

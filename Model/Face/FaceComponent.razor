@@ -3,7 +3,7 @@
 @inject FaceService FaceService
 
 <div class="api-test">
-    <h3>Face API Detect</h3>
+    <h3>Face API Detect @Label</h3>
 
     @if(!isLoaded){
         <div>
@@ -18,7 +18,7 @@
 
     <div class="face_field">
         <div class="face_img_field">
-            <img src="@FaceResultModel.ImageDataUrl"/>
+            <img class="face_img_width_max" src="@FaceResultModel.ImageDataUrl"/>
         </div>
         @if(isLoading){
             <div class="loader">Loading...</div>
@@ -56,6 +56,9 @@
 
     //Default Detection Model 1
     private string modelVersion = "1";
+
+    [Parameter]
+    public string Label {get;set;} = String.Empty;
 
     protected override void OnInitialized()
     {

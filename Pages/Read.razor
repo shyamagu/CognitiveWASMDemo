@@ -38,8 +38,10 @@ SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))"
         <ReadComponent
             @key=index
             ReadClient="@ReadService.GetReadClient(AuthManager.ReadApi_Key,AuthManager.ReadApi_Endpoint)"
-            ReadResultModel="getExistReadResult(index)"
-            OnAfterApiCalled="IncrementComponentNumber" />
+            ReadResultModel="@getExistReadResult(index)"
+            OnAfterApiCalled="@IncrementComponentNumber"
+            Label="@getLabel(index+1,componentNumber)"    
+            />
     }
 }
 
@@ -73,5 +75,9 @@ SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))"
     public async Task IncrementComponentNumber(){
         componentNumber++;
         await JS.InvokeVoidAsync("scrollBy",0,400);
+    }
+
+    private string getLabel(int num1, int num2){
+        return string.Format("({0}/{1})",num1,num2);
     }
 }
