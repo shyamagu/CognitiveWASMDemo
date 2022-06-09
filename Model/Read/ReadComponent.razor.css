@@ -13,10 +13,6 @@
     margin-bottom: 10px;
 }
 
-.read_field{
-    display: flex;
-}
-
 .read_img_field{
     width:600px;
 }
@@ -24,4 +20,14 @@
 .read_text_field{
     margin-top:20px;
     text-align: left;
+}
+
+@media (max-width: 640.98px) {
+    .api-test {
+        margin: 30px auto 5px auto;
+    }
+
+    .read_img_width_max{
+        width:325px;
+    }
 }

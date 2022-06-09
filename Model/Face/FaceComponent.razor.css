@@ -2,6 +2,7 @@
     background-color: #ede4ff;
     border-bottom: 2px solid #8949ab;
     margin: 30px 50px 5px 10px;
+    padding-top: 5px;
     padding-left: 10px;
     padding-bottom: 10px;
 }
@@ -23,4 +24,18 @@
 
 .face_text_field{
     text-align: left;
+}
+
+@media (max-width: 640.98px) {
+    .api-test {
+        margin: 30px auto 5px auto;
+    }
+
+    .face_field{
+        display: block;
+    }
+
+    .face_img_width_max{
+        width:325px;
+    }
 }

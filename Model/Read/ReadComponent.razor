@@ -3,7 +3,7 @@
 @inject ReadService ReadService
 
 <div class="api-test">
-    <h3>Read API Analyze</h3>
+    <h3>Read API Analyze @Label</h3>
 
     @if(!isLoaded){
         <InputFile OnChange="@loadFile"/>
@@ -11,7 +11,7 @@
 
     <div>
         <div class="read_img_field">
-            <img src="@ReadResultModel.ImageDataUrl"/>
+            <img class="read_img_width_max" src="@ReadResultModel.ImageDataUrl"/>
         </div>
         @if(isLoading){
             <div class="loader">Loading...</div>
@@ -44,6 +44,9 @@
 
     [Parameter] 
     public EventCallback OnAfterApiCalled { get; set; }
+
+    [Parameter]
+    public string Label {get;set;} = String.Empty;
 
     protected override void OnInitialized()
     {
