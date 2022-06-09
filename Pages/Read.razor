@@ -1,0 +1,77 @@
+@page "/read"
+@using Microsoft.Extensions.Configuration
+@using BlazorCognitiveWASM.Model
+@using BlazorCognitiveWASM.Model.Read
+@inject IJSRuntime JS
+@inject IConfiguration configuration
+@inject AuthManager AuthManager
+@inject ReadService ReadService
+
+
+<h1>Read API (Computer Vision)</h1>
+
+<AuthComponent 
+    Key="@AuthManager.ReadApi_Key" 
+    Endpoint="@AuthManager.ReadApi_Endpoint" 
+    SetAuth="AuthManager.SetReadApiAuthentication"
+/>
+
+@*
+下の記述にしないとエラーがとれなかった時もあった
+SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))" 
+*@
+
+@*
+@if(AuthManager.IsFaceApiAuthAlreadySet){
+    @for(int index=0;index<componentNumber;index++){
+        <ReadComponent
+            @key=index
+            ReadClient="@ReadService.GetReadClient(AuthManager.ReadApi_Key,AuthManager.ReadApi_Endpoint)"
+            ReadResultModel="getExistReadResult(index)"
+            OnAfterApiCalled="IncrementComponentNumber" />
+    }
+}
+*@
+
+@if(AuthManager.IsReadApiAuthAlreadySet){
+    @for(int index=0;index<componentNumber;index++){
+        <ReadComponent
+            @key=index
+            ReadClient="@ReadService.GetReadClient(AuthManager.ReadApi_Key,AuthManager.ReadApi_Endpoint)"
+            ReadResultModel="getExistReadResult(index)"
+            OnAfterApiCalled="IncrementComponentNumber" />
+    }
+}
+
+<div class="space_bottom"></div>
+
+@code {
+
+    private int componentNumber = 1;
+
+    protected override void OnInitialized()
+    {
+        //Development key and endpoint
+        var key = configuration.GetSection("Read")["Key"];
+        var endpoint = configuration.GetSection("Read")["Endpoint"];
+        if(!String.IsNullOrEmpty(key) && !String.IsNullOrEmpty(endpoint)){
+            AuthManager.SetReadApiAuthentication(new AuthModel(key,endpoint));
+        }
+
+        //Set Component Number
+        componentNumber = ReadService.ReadResult.Count + 1;
+    }
+
+    private ReadResultModel getExistReadResult(int index){
+        if(index < ReadService.ReadResult.Count){
+            return ReadService.ReadResult[index];
+        }else{
+            return new ReadResultModel();
+        }
+    }
+
+    public async Task IncrementComponentNumber(){
+        componentNumber++;
+        await JS.InvokeVoidAsync("scrollBy",0,400);
+    }
+}
