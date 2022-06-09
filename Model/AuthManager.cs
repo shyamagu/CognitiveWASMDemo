@@ -1,6 +1,8 @@
 namespace BlazorCognitiveWASM.Model;
 
 public class AuthManager{
+
+    //Face API
     public string FaceApi_Key {get;set;} = String.Empty;
 
     public string FaceApi_Endpoint {get;set;} = String.Empty;
@@ -12,4 +14,19 @@ public class AuthManager{
     }
 
     public Boolean IsFaceApiAuthAlreadySet => (!String.IsNullOrEmpty(FaceApi_Key) && !String.IsNullOrEmpty(FaceApi_Endpoint));
+
+    //READ API
+    public string ReadApi_Key {get;set;} = String.Empty;
+
+    public string ReadApi_Endpoint {get;set;} = String.Empty;
+
+    public void SetReadApiAuthentication(AuthModel authModel){
+        
+        ReadApi_Key = authModel.Key;
+        ReadApi_Endpoint = authModel.Endpoint;
+    }
+
+    public Boolean IsReadApiAuthAlreadySet => (!String.IsNullOrEmpty(ReadApi_Key) && !String.IsNullOrEmpty(ReadApi_Endpoint));
+
+
 }

@@ -1,0 +1,27 @@
+.api-test {
+    background-color: #ede4ff;
+    border-bottom: 2px solid #8949ab;
+    margin: 30px 50px 5px 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+.leftpadding10{
+    margin-top:20px;
+    margin-left: 10px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
+
+.read_field{
+    display: flex;
+}
+
+.read_img_field{
+    width:600px;
+}
+
+.read_text_field{
+    margin-top:20px;
+    text-align: left;
+}

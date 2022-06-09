@@ -1,0 +1,99 @@
+@using Microsoft.Azure.CognitiveServices.Vision.ComputerVision
+@using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models
+@inject ReadService ReadService
+
+<div class="api-test">
+    <h3>Read API Analyze</h3>
+
+    @if(!isLoaded){
+        <InputFile OnChange="@loadFile"/>
+    }
+
+    <div>
+        <div class="read_img_field">
+            <img src="@ReadResultModel.ImageDataUrl"/>
+        </div>
+        @if(isLoading){
+            <div class="loader">Loading...</div>
+        }else{
+            <div class="read_text_field">
+                <ul>
+                @foreach (var result in ReadResultModel.ReadAnalysisResult)
+                {
+                    <li>@result</li>
+                }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@code{
+    private Boolean isLoading = false;
+
+    private Boolean isLoaded = false;
+
+    private List<string> readApiResult = new();
+
+    [Parameter]
+    [EditorRequired]
+    public ComputerVisionClient? ReadClient {get;set;}
+
+    [Parameter]
+    public ReadResultModel ReadResultModel {get;set;} = new();
+
+    [Parameter] 
+    public EventCallback OnAfterApiCalled { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if(ReadResultModel.ReadAnalysisResult.Count > 0){
+            isLoaded = true;
+        }
+    }
+
+    private async Task loadFile(InputFileChangeEventArgs e){
+
+        isLoading = true;
+
+        IBrowserFile imgFile = e.File;
+
+        string imageType = imgFile.ContentType;
+        var resizedImage = await imgFile.RequestImageFileAsync(imageType, 600, 400);
+        var buffers = new byte[resizedImage.Size];
+
+        var stream = await resizedImage.OpenReadStream().ReadAsync(buffers);
+        ReadResultModel.ImageDataUrl = $"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
+
+        //一旦表示したい場合
+        StateHasChanged();
+
+        if(ReadClient is null){
+            ReadResultModel.ReadAnalysisResult = new List<string>(){"Please check your key and endpoint"};
+            return;
+        }
+
+        try{
+            string operationLocation = await ReadService.GetOperationLocation(ReadClient,resizedImage.OpenReadStream());
+
+            Thread.Sleep(1000);
+
+            ReadOperationResult results = await ReadService.GetReadOperationResult(ReadClient,operationLocation);
+
+            ReadResultModel.ReadAnalysisResult = ReadService.GetReadAnalysisResult(results);
+            ReadResultModel.ImageDataUrl = ReadService.GetReadApiResultImageUrl(results,buffers);
+            
+        }
+        catch (System.Exception)
+        {
+            ReadResultModel.ReadAnalysisResult = new List<string>(){"Read API Call Exception, Please check your key and endpoint"};
+        }
+            
+        ReadService.ReadResult.Add(ReadResultModel);
+
+        isLoading = false;
+        isLoaded = true;
+
+        await OnAfterApiCalled.InvokeAsync();
+    }
+}
