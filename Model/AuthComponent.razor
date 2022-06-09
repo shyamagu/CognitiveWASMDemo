@@ -3,12 +3,12 @@ Setup your key and endpoint and try this API.
 </p>
 <EditForm Model="@authModel" OnSubmit="validateData">
     <label class="padding_right">
-        <h5>Key</h5>
-        <InputText id="key" type="password" @bind-Value=authModel!.Key />
+        <h5>Endpoint</h5>
+        <InputText id="endpoint" type="text" @bind-Value=authModel!.Endpoint />
     </label>
     <label class="padding_right">
-        <h5>Endpoint</h5>
-        <InputText id="endpoint" type="password" @bind-Value=authModel.Endpoint />
+        <h5>Key</h5>
+        <InputText id="password" type="password" @bind-Value=authModel!.Key />
     </label>
     <input type="submit" class="btn btn-primary" value="Setup"/>
     <div>@message</div>
