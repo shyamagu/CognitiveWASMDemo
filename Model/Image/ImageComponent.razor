@@ -1,0 +1,103 @@
+@using Microsoft.Azure.CognitiveServices.Vision.ComputerVision
+@using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models
+@inject ImageService ImageService
+
+@namespace BlazorCognitiveWASM.Model.Image
+
+<div class="api-test">
+    <h3>Image Analyze @Label</h3>
+
+    @if(!isLoaded){
+        <InputFile OnChange="@loadFile"/>
+    }
+
+    <div>
+        <div class="read_img_field">
+            <img class="read_img_width_max read_image_height_max" src="@ImageResultModel.ImageDataUrl"/>
+        </div>
+        @if(isLoading){
+            <div class="loader">Loading...</div>
+        }else{
+            <div class="read_text_field">
+                <ul>
+                @foreach (var result in ImageResultModel.ImageAnalysisResult)
+                {
+                    <li>@result</li>
+                }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@code{
+    private Boolean isLoading = false;
+
+    private Boolean isLoaded = false;
+
+    private List<string> imageApiResult = new();
+
+    [Parameter]
+    [EditorRequired]
+    public ComputerVisionClient? ImageClient {get;set;}
+
+    [Parameter]
+    public ImageResultModel ImageResultModel {get;set;} = new();
+
+    [Parameter] 
+    public EventCallback OnAfterApiCalled { get; set; }
+
+    [Parameter]
+    public string Label {get;set;} = String.Empty;
+
+    protected override void OnInitialized()
+    {
+        if(ImageResultModel.ImageAnalysisResult.Count > 0){
+            isLoaded = true;
+        }
+    }
+
+    private async Task loadFile(InputFileChangeEventArgs e){
+
+        isLoading = true;
+
+        IBrowserFile imgFile = e.File;
+
+        string imageType = imgFile.ContentType;
+        var resizedImage = await imgFile.RequestImageFileAsync(imageType, 600, 600);
+        var buffers = new byte[resizedImage.Size];
+
+        var stream = await resizedImage.OpenReadStream().ReadAsync(buffers);
+        ImageResultModel.ImageDataUrl = $"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
+
+        //一旦表示したい場合
+        StateHasChanged();
+
+        if(ImageClient is null){
+            ImageResultModel.ImageAnalysisResult = new List<string>(){"Please check your key and endpoint"};
+            return;
+        }
+
+        try{
+
+            ImageAnalysis results = await ImageService.GetAnalyzeImageResult(ImageClient,resizedImage.OpenReadStream());
+
+            ImageResultModel.ImageAnalysisResult = ImageService.GetImageAnalysisResult(results);
+
+            ImageResultModel.ImageDataUrl = ImageService.GetImageApiResultImageUrl(results,buffers);
+
+        }
+        catch (System.Exception)
+        {
+            ImageResultModel.ImageAnalysisResult = new List<string>(){"Read API Call Exception, Please check your key and endpoint"};
+            throw;
+        }
+            
+        ImageService.ImageResult.Add(ImageResultModel);
+
+        isLoading = false;
+        isLoaded = true;
+
+        await OnAfterApiCalled.InvokeAsync();
+    }
+}

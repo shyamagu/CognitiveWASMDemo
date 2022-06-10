@@ -28,5 +28,16 @@ public class AuthManager{
 
     public Boolean IsReadApiAuthAlreadySet => (!String.IsNullOrEmpty(ReadApi_Key) && !String.IsNullOrEmpty(ReadApi_Endpoint));
 
+    //IMAGE API
+    public string ImageApi_Key {get;set;} = String.Empty;
 
+    public string ImageApi_Endpoint {get;set;} = String.Empty;
+
+    public void SetImageApiAuthentication(AuthModel authModel){
+        
+        ImageApi_Key = authModel.Key;
+        ImageApi_Endpoint = authModel.Endpoint;
+    }
+
+    public Boolean IsImageApiAuthAlreadySet => (!String.IsNullOrEmpty(ImageApi_Key) && !String.IsNullOrEmpty(ImageApi_Endpoint));
 }

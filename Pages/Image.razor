@@ -1,0 +1,69 @@
+@page "/image"
+@using Microsoft.Extensions.Configuration
+@using BlazorCognitiveWASM.Model
+@using BlazorCognitiveWASM.Model.Image
+@inject IJSRuntime JS
+@inject IConfiguration configuration
+@inject AuthManager AuthManager
+@inject ImageService ImageService
+@inject HttpClient HttpClient
+
+<h1>Image API (Computer Vision)</h1>
+
+<AuthComponent 
+    Key="@AuthManager.ImageApi_Key" 
+    Endpoint="@AuthManager.ImageApi_Endpoint" 
+    SetAuth="@AuthManager.SetImageApiAuthentication"
+/>
+
+@if(AuthManager.IsImageApiAuthAlreadySet){
+    @for(int index=0;index<componentNumber;index++){
+        <ImageComponent
+            @key=index
+            ImageClient="@ImageService.GetImageClient(AuthManager.ImageApi_Key,AuthManager.ImageApi_Endpoint)"
+            ImageResultModel="@getExistImageResult(index)"
+            OnAfterApiCalled="@IncrementComponentNumber"
+            Label="@getLabel(index+1,componentNumber)"
+            />
+    }
+}
+
+<div class="space_bottom"></div>
+
+@code {
+
+    private int componentNumber = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Development key and endpoint
+        var key = configuration.GetSection("Image")["Key"];
+        var endpoint = configuration.GetSection("Image")["Endpoint"];
+        if(!String.IsNullOrEmpty(key) && !String.IsNullOrEmpty(endpoint)){
+            AuthManager.SetImageApiAuthentication(new AuthModel(key,endpoint));
+        }
+
+        //Set Component Number
+        componentNumber = ImageService.ImageResult.Count + 1;
+
+        await ImageService.setFontFamily(HttpClient);
+    }
+
+    private ImageResultModel getExistImageResult(int index){
+        if(index < ImageService.ImageResult.Count){
+            return ImageService.ImageResult[index];
+        }else{
+            return new ImageResultModel();
+        }
+    }
+
+    public async Task IncrementComponentNumber(){
+        componentNumber++;
+        await JS.InvokeVoidAsync("scrollBy",0,600);
+    }
+
+    private string getLabel(int num1, int num2){
+        return string.Format("({0}/{1})",num1,num2);
+    }
+}
+

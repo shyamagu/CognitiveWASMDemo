@@ -49,24 +49,9 @@ public class ReadService{
 
     public string GetReadApiResultImageUrl(ReadOperationResult readOperationResult,byte[] buffer){
 
-        Image image = Image.Load(buffer);
+        SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(buffer);
 
         var textFileResult = readOperationResult.AnalyzeResult.ReadResults;
-
-/*  これだと長方形で斜めとか考慮されない
-        foreach(ReadResult page in textFileResult){
-            foreach(Line line in page.Lines){
-                RectangularPolygon rectPolygon = new RectangularPolygon(
-                    (float) line.BoundingBox[0]!,
-                    (float) line.BoundingBox[1]!,
-                    (float) (line.BoundingBox[2]-line.BoundingBox[0])!,
-                    (float) (line.BoundingBox[7]-line.BoundingBox[1])!
-                );
-                var pen = Pens.Solid(Color.Red,1.0f);
-                image.Mutate(ctx=>ctx.Draw(pen,rectPolygon));                
-            }
-        }
-*/
 
         foreach(ReadResult page in textFileResult){
             foreach(Line line in page.Lines){
