@@ -1,0 +1,37 @@
+.api-test {
+    background-color: #ede4ff;
+    border-bottom: 2px solid #8949ab;
+    margin: 30px 50px 5px 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+.leftpadding10{
+    margin-top:20px;
+    margin-left: 10px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
+
+.read_img_field{
+    width:600px;
+}
+
+.read_text_field{
+    margin-top:20px;
+    text-align: left;
+}
+
+.read_image_height_max{
+    max-height:400px;
+}
+
+@media (max-width: 640.98px) {
+    .api-test {
+        margin: 30px auto 5px auto;
+    }
+
+    .read_img_width_max{
+        max-width: 325px;
+    }    
+}
