@@ -14,12 +14,8 @@
     Key="@AuthManager.ReadApi_Key" 
     Endpoint="@AuthManager.ReadApi_Endpoint" 
     SetAuth="AuthManager.SetReadApiAuthentication"
+    SetUpLink="https://docs.microsoft.com/ja-jp/azure/cognitive-services/computer-vision/quickstarts-sdk/client-library?tabs=visual-studio&pivots=programming-language-csharp#prerequisites"
 />
-
-@*
-下の記述にしないとエラーがとれなかった時もあった
-SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))" 
-*@
 
 @*
 @if(AuthManager.IsFaceApiAuthAlreadySet){

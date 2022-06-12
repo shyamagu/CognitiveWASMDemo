@@ -14,12 +14,8 @@
     Key="@AuthManager.FaceApi_Key" 
     Endpoint="@AuthManager.FaceApi_Endpoint" 
     SetAuth="AuthManager.SetFaceApiAuthentication"
+    SetUpLink="https://docs.microsoft.com/ja-jp/azure/cognitive-services/computer-vision/quickstarts-sdk/identity-client-library?pivots=programming-language-csharp&tabs=visual-studio#prerequisites"
 />
-
-@*
-下の記述にしないとエラーがとれなかった時もあった
-SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))" 
-*@
 
 @if(AuthManager.IsFaceApiAuthAlreadySet){
     @for(int index=0;index<componentNumber;index++){
@@ -28,7 +24,7 @@ SetAuth="((args)=>AuthManager.SetFaceApiAuthentication((AuthModel) args))"
             FaceClient="@FaceService.GetFaceClient(AuthManager.FaceApi_Key,AuthManager.FaceApi_Endpoint)"
             FaceResultModel="@getExistFaceResult(index)"
             OnAfterApiCalled="@IncrementComponentNumber"
-            Label="@getLabel(index+1,componentNumber)"    
+            Label="@getLabel(index+1,componentNumber)"
             />
     }
 
