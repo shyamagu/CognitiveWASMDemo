@@ -1,5 +1,12 @@
 <p>
 Setup your key and endpoint and try this API.
+@if(!String.IsNullOrEmpty(SetUpLink)){
+    <div>
+        (If you don't have these,
+        <a href="@SetUpLink" target="_blank">Please see this document</a>
+        )
+    </div>
+}
 </p>
 <EditForm Model="@authModel" OnSubmit="validateData">
     <label class="padding_right">
@@ -27,6 +34,10 @@ Setup your key and endpoint and try this API.
 
     [Parameter] 
     public EventCallback<AuthModel> SetAuth { get; set; }
+
+    [Parameter]
+    public string SetUpLink {get;set;} = String.Empty;
+
     private async Task validateData(EditContext editContext){
         message = String.Empty;
         var auth = editContext.Model as AuthModel;
