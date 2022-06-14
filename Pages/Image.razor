@@ -6,7 +6,6 @@
 @inject IConfiguration configuration
 @inject AuthManager AuthManager
 @inject ImageService ImageService
-@inject HttpClient HttpClient
 
 <h1>Image API (Computer Vision)</h1>
 
@@ -47,7 +46,7 @@
         //Set Component Number
         componentNumber = ImageService.ImageResult.Count + 1;
 
-        await ImageService.setFontFamily(HttpClient);
+        await ImageService.setFontFamily();
     }
 
     private ImageResultModel getExistImageResult(int index){

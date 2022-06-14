@@ -14,6 +14,11 @@ namespace BlazorCognitiveWASM.Model.Image;
 public class ImageService{
     public List<ImageResultModel> ImageResult = new();
 
+    private readonly HttpClient httpClient;
+    public ImageService(HttpClient httpClient){
+        this.httpClient = httpClient;
+    }
+
     public ComputerVisionClient GetImageClient(string key,string endpoint){
         return new ComputerVisionClient(new ApiKeyServiceClientCredentials(key)){ Endpoint = endpoint };
     }
@@ -22,7 +27,7 @@ public class ImageService{
     private FontFamily fontFamily;
 
     private Font? font = null;
-    public async Task setFontFamily(HttpClient httpClient){
+    public async Task setFontFamily(){
 
             if(font is null){
                 var fontBytes = await httpClient.GetByteArrayAsync("/font/BebasNeue-Regular.ttf");
