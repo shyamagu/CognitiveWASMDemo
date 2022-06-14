@@ -15,6 +15,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddSingleton<AuthManager>();
 builder.Services.AddSingleton<FaceService>();
 builder.Services.AddSingleton<ReadService>();
-builder.Services.AddSingleton<ImageService>();
+builder.Services.AddScoped<ImageService>();
 
 await builder.Build().RunAsync();
