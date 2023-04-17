@@ -16,5 +16,6 @@ builder.Services.AddSingleton<AuthManager>();
 builder.Services.AddSingleton<FaceService>();
 builder.Services.AddSingleton<ReadService>();
 builder.Services.AddScoped<ImageService>();
+builder.Services.AddLogging();
 
 await builder.Build().RunAsync();

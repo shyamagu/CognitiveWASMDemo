@@ -1,6 +1,7 @@
 @using Microsoft.Azure.CognitiveServices.Vision.Face
 @using Microsoft.Azure.CognitiveServices.Vision.Face.Models
 @inject FaceService FaceService
+@inject ILogger<Model.Face.FaceComponent> Logger
 
 <div class="api-test">
     <h3>Single Face Detect @Label</h3>
@@ -104,9 +105,10 @@
                 FaceResultModel.ImageDataUrl = FaceService.GetFaceApiResultImageUrl(detectedFaces[0],buffers);
             }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
             FaceResultModel.FaceAnalysisResult = new List<string>(){"Face API Call Exception, Please check your key and endpoint"};
+            Logger.LogError(ex, "Face API Call Exception, Please check your key and endpoint");
         }
             
         FaceService.FaceResult.Add(FaceResultModel);
